@@ -182,9 +182,18 @@ AEDES.authenticate = function(client, username, password, callback) {
 
   // store connected client data
   if(client.CONNECTEDCLIENTS === undefined) client.CONNECTEDCLIENTS = {
-    'username': null,
-    'password': null,
-    'accessTo': null
+    'username': "",
+    'password': "",
+    'accessTo': ""
+  }
+
+  // check if username and password are set
+  if(username === undefined || password === undefined){
+    // can't validate user, do not accept
+    Log(2, "No username or password set")
+    var error = new Error('Auth error, no username or password set')
+    error.returnCode = 4
+    return callback(error, null)
   }
 
   // connect to Weaviate to validate user
@@ -267,13 +276,16 @@ AEDES.authorizeSubscribe = function (client, sub, callback) {
  */
 AEDES.authorizePublish = function (client, packet, callback) {
 
+  // check if set
+  if(client.CONNECTEDCLIENTS.accessTo === undefined) client.CONNECTEDCLIENTS.accessTo = {}
+
   // validate if user is allowed to publish to this topic
   if(client.CONNECTEDCLIENTS.accessTo[packet.topic] == true){
     callback(null)
   } else {
 
     // connect to Weaviate to validate access to topic
-    HTTP.get(options = {
+    HTTP.get({
       host: OPTIONS.weaviateHost,
       port: OPTIONS.weaviatePort,
       path: OPTIONS.weaviateUrl + packet.topic,
@@ -286,9 +298,10 @@ AEDES.authorizePublish = function (client, packet, callback) {
       }
     }, function(res) {
       if(res.statusCode === 200){
-        // correct, subscribe
-        callback(null)
+        // correct, publish
+        //if(client.CONNECTEDCLIENTS.accessTo === undefined) client.CONNECTEDCLIENTS.accessTo = {}
         client.CONNECTEDCLIENTS.accessTo[packet.topic] = true;
+        callback(null)
       } else {
         // incorrect, fail
         Log(2, "not allowed to publish to: " + sub.topic)
