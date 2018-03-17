@@ -127,7 +127,7 @@ if (OPTIONS.help || OPTIONS.mqtt === undefined && OPTIONS.websockets === undefin
   // validate and set defaults
   if(OPTIONS.weaviateHost === undefined) OPTIONS.weaviateHost = "localhost"
   if(OPTIONS.weaviatePort === undefined) OPTIONS.weaviatePort = 80
-  if(OPTIONS.weaviateUrl === undefined) OPTIONS.weaviateUrl = "/weaviate/v1/"
+  if(OPTIONS.weaviateUrl === undefined) OPTIONS.weaviateUrl = "/weaviate/v1"
   if(OPTIONS.debug === undefined) OPTIONS.debug = false
   if(OPTIONS.protocol === undefined) OPTIONS.protocol = "https"
   if(OPTIONS.mqttPort === undefined) OPTIONS.mqttPort = 1883
@@ -140,7 +140,7 @@ if (OPTIONS.help || OPTIONS.mqtt === undefined && OPTIONS.websockets === undefin
   Log(3, "protocol set to: " + OPTIONS.protocol)
   Log(3, "mqtt set to: " + OPTIONS.mqtt)
   Log(3, "mqtt port set to: " + OPTIONS.mqttPort)
-  Log(3, "websockets set to: " + OPTIONS.websocket)
+  Log(3, "websockets set to: " + OPTIONS.websockets)
   Log(3, "websocket port set to: " + OPTIONS.websocketPort)
 }
 
@@ -165,10 +165,10 @@ if(OPTIONS.mqtt == true){
 /*
  * Start websocket server
  */
-if(OPTIONS.websocket == true){
+if(OPTIONS.websockets == true){
   WS.createServer({
     server: HTTPSERVER
-  }, aedes.handle)
+  }, AEDES.handle)
 
   HTTPSERVER.listen(OPTIONS.websocketPort, function () {
     Log(1, 'websocket server listening on port: ' + OPTIONS.websocketPort)
